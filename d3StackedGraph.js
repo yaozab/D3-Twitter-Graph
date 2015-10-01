@@ -6,7 +6,7 @@ function drawStackedGraph() {
       m = hours, // number of samples per layer
       stack = d3.layout.stack(),
       layers = stack(d3.range(n).map(function(data) { return getGraphHeights(m, data); }));
-      console.log(layers);
+      //console.log(layers);
       yGroupMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y; }); }),
       yStackMax = d3.max(layers, function(layer) { return d3.max(layer, function(d) { return d.y0 + d.y; }); });
 
@@ -37,7 +37,7 @@ function drawStackedGraph() {
 
   var layer = svg.selectAll(".layer")
       .data(layers)
-    .enter().append("g")
+      .enter().append("g")
       .attr("class", "layer")
       .style("fill", function(d, i) { return color(i);
   });
@@ -51,7 +51,18 @@ function drawStackedGraph() {
       .attr("title", function(d, i, j) { return topWords[j];})
       .on('mouseover', function(d,i,j) {
         showWord(j,topWords[j]);
+        d3.select(this).attr ("fill", "white");
+      })
+      .on("mouseout", function(d,i,j) {
+          if($(this).attr("fill-old")) $(this).css("fill", $(this).attr("fill-old"));
+          d3.select(this).attr("fill", color(j));
       });
+      // .on("mouseover", function() {
+      //   d3.select(this).classed("hover", true);
+      // })
+      // .on("mouseout", function() {
+      //   d3.select(this).classed("hover", false);
+      // });
   rect.append("text")
       .text(function(d,i,j) {return topWords[j];})
 
@@ -59,16 +70,6 @@ function drawStackedGraph() {
       .delay(function(d, i) { return i * 10; })
       .attr("y", function(d) { return y(d.y0 + d.y); })
       .attr("height", function(d) { return y(d.y0) - y(d.y0 + d.y); });
-
-    rect.attr("class", function(d) {
-        return "hour bordered" + "color-" + colorScale(d.value).substring(1);
-      })
-      .on("mouseover", function(d,i) {
-        svg.selectAll("rect.color-" + colors[i].substring(1)).style("stroke", "blue");
-      })
-      .on("mouseout", function(d,i) {
-        svg.selectAll("rect.color-" + colors[i].substring(1)).style("stroke", "white");
-      });
 
   svg.append("g")
       .attr("class", "x axis")
@@ -89,7 +90,7 @@ function getGraphHeights(bucket, keyIndex) {
   for (i = 0; i < bucket; i++) {
     word = topWords[keyIndex];
     if (sortedWords[i][word]) {
-      a.push({"x":i, "y":sortedWords[i][word]});
+      a.push({"x":i, "y":sortedWords[i][word]}); // push values into object
     } else {
       a.push({"x":i, "y":0});
     }
