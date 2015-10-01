@@ -1,5 +1,6 @@
 var hours = 18;
-
+// web url to access twitter keyword api
+//http://api.retinanews.net/tweet/delay/21600/amount/21600
 $.getJSON("tweets10pm10am.json", 
 	function( data ) {
 		console.log("blegh");
